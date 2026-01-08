@@ -8,9 +8,11 @@ export default function Scorers({competitionId}) {
         error: scorersError
     } = useFetch(`competitions/${competitionId}/scorers`);
 
-    if(scorersError) return <p>Error cargando las estadísticas: {scorersError}</p>
-    if(scorersLoading) return <p>Cargando estadísticas...</p>
-    if(!scorersData) return <p>No hay datos.</p>
+    if (scorersLoading || scorersData === null){return <p>Cargando estadísticas...</p>;}
+    if (scorersError){return <p>Error cargando las estadísticas: {scorersError}</p>;}
+    if (!scorersData){return <p>No hay respuesta del servidor</p>;}
+    if (!Array.isArray(scorersData.scorers)){return <p>No hay estadísticas disponibles</p>;}
+    if (scorersData.scorers.length === 0){return <p>No hay goleadores</p>;}
     
     return (
         <section className="scorers-container">

@@ -10,10 +10,16 @@ export default function Standings({competitionId}) {
         error: standingsError
     } = useFetch(`competitions/${competitionId}/standings`);
 
+    if(standingsLoading || standingsData === null) return <p>Cargando posiciones...</p>
     if(standingsError) return <p>Error cargando posiciones: {standingsError}</p>
-    if(standingsLoading) return <p>Cargando posiciones...</p>
-    if(!standingsData) return <p>No hay data.</p>
-    console.log(standingsData);
+    if(!standingsData || standingsData.length === 0) return <p>No hay datos...</p>
+    if(!standingsData?.standings) {return null;}
+    
+    const table = standingsData.standings.find(
+        (s) => s.type === "TOTAL"
+    );
+
+    if(!table?.table) {return null;}
 
     const groupStandings = standingsData?.standings?.filter(
         s => s.stage === 'ALL'

@@ -7,16 +7,16 @@ import { Link } from 'react-router-dom';
 export default function Competitions() {
     const {data, loading, error} = useFetch("competitions");
     
+    if (loading || data === null){return <p>Cargando partidos...</p>;}
+    if (error){return <p>Error cargando los datos</p>;}
+    if (!data){return <p>No hay respuesta del servidor</p>;}
+    if (!Array.isArray(data.competitions)){return <p>No hay datos disponibles</p>;}
+    if (data.competitions.length === 0) {return <p>No hay datos para mostrar</p>;}
+
     return (
         <section className="competition-container">
-            {error && <p>Error: {error}</p>}
-            {loading ? (
-                <section>
-                    <p>Cargando datos...</p>
-                </section>
-            ) : (
                 <section className="competition-content">
-                    {Array.isArray(data?.competitions) && data.competitions.map((competition) => (
+                    {data.competitions.map((competition) => (
                         <Link
                         to={`/competitions/${competition.id}`}
                         key={competition.id}
@@ -31,7 +31,6 @@ export default function Competitions() {
                         </Link>
                     ))}
                 </section>
-            )}
         </section>
     )
 }
