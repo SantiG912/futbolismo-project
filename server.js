@@ -7,7 +7,9 @@ dotenv.config();
 const apiKey = process.env.API_KEY;
 
 const app = express();
-app.use(cors());
+app.use(cors({
+    origin: "*",
+}));
 
 app.get("/api/:endpoint*", async (req, res) => {
     try{
@@ -29,7 +31,7 @@ app.get("/api/:endpoint*", async (req, res) => {
     }
 });
 
-const PORT = 3001;
+const PORT = process.env.PORT || 3001;
 app.listen(PORT, () => {
-    console.log("Proxy server running on http://localhost:" + PORT); 
+    console.log(`Proxy server running on: ${PORT}`); 
 }); 
