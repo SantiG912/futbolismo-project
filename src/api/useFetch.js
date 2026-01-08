@@ -7,6 +7,7 @@ export default function useFetch(url) {
     const [error, setError] = useState(null);
 
     useEffect(() => {
+        const controller = new AbortController();
 
         if(!url) return;
 
@@ -16,8 +17,12 @@ export default function useFetch(url) {
 
                 setLoading(true);
                 setError(null);
+                setData(null);
 
-                const response = await fetch(`${apiUrl}/api/${url}`);
+                const response = await fetch(
+                    `${apiUrl}/api/${url}`,
+                    {signal: controller.signal}
+                );
 
                 if(!response.ok){
                     throw new Error(`Error ${response.status}: ${response.statusText}`);
@@ -27,7 +32,9 @@ export default function useFetch(url) {
                 setData(data);
 
             }catch(error){
+                if(error.name !== "AbortError"){
                 setError(error.message);
+            }
             }finally{
                 setLoading(false);
             }
@@ -35,6 +42,10 @@ export default function useFetch(url) {
 
         fetchData();
         
+        return () => {
+            controller.abort();
+        };
+
     }, [url]);
 
     return {data, loading, error};
