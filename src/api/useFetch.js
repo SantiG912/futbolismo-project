@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react'
+const {VITE_API_URL: apiUrl} = import.meta.env;
 
 export default function useFetch(url) {
     const [data, setData] = useState(null);
@@ -16,7 +17,7 @@ export default function useFetch(url) {
                 setLoading(true);
                 setError(null);
 
-                const response = await fetch(`http://localhost:3001/api/${url}`);
+                const response = await fetch(`${apiUrl}/api/${url}`);
 
                 if(!response.ok){
                     throw new Error(`Error ${response.status}: ${response.statusText}`);
