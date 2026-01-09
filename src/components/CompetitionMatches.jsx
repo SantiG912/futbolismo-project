@@ -11,20 +11,29 @@ export default function CompetitionMatches({ competitionId }) {
     error: matchError
   } = useFetch(`competitions/${competitionId}/matches`);
 
+  console.log(matchData);
+
   const [selectedMatchday, setSelectedMatchday] = useState(null);
 
   const matches = matchData?.matches ?? [];
-
+  
   const matchesByMatchday = React.useMemo(() => {
-    return matches
-    .filter(match => Number.isInteger(match.matchday))
-    .reduce((acc, match) => {
-      const matchday = match.matchday;
-      if (!acc[matchday]) acc[matchday] = [];
-      acc[matchday].push(match);
+
+    return matches.reduce((acc, match) => {
+
+      if (!Number.isFinite(match.matchday)) {
+        return acc;
+      }
+
+      const day = match.matchday;
+
+      if (!acc[day]) acc[day] = [];
+      acc[day].push(match);
+
       return acc;
     }, {});
   }, [matches]);
+
 
   const currentMatchday = React.useMemo(() => {
     if(Object.keys(matchesByMatchday).length === 0) return null;
@@ -32,17 +41,25 @@ export default function CompetitionMatches({ competitionId }) {
   }, [matchesByMatchday]);
 
   useEffect(() => {
-    if(currentMatchday && !selectedMatchday){
+    
+    if (!currentMatchday) return;
+
+    if (
+      selectedMatchday === null ||
+      !matchesByMatchday[selectedMatchday]
+    ){
       setSelectedMatchday(currentMatchday);
     }
-  }, [currentMatchday, selectedMatchday]);
+
+  }, [currentMatchday, selectedMatchday, matchesByMatchday]);
+
 
   if(matchLoading || matchData === null)return <p>Cargando partidos...</p>;
   if(matchError)return <p>Error cargando los partidos</p>;
   if(!matchData)return <p>No hay respuesta del servidor</p>;
   if(matches.length === 0)return <p>No hay partidos disponibles</p>;
   if(!currentMatchday)return <p>No hay jornadas disponibles</p>;
-  if(Object.keys(matchesByMatchday).length === 0) return <p>No hay jornadas disponibles</p>;
+
   return (
     <section className="matches-container">
       <h3>Partidos</h3>
