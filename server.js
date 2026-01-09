@@ -31,6 +31,8 @@ const getTTL = (endpoint) => {
 
 
 app.get("/api/:endpoint*", async (req, res) => {
+
+    const endpoint = req.params.endpoint + (req.params[0] || "");
     const key = req.originalUrl;
     const now = Date.now();
     const ttl = getTTL(endpoint);
@@ -45,7 +47,6 @@ app.get("/api/:endpoint*", async (req, res) => {
     }
 
     try{
-        const endpoint = req.params.endpoint + (req.params[0] || "");
         const apiUrl = `https://api.football-data.org/v4/${endpoint}`;
 
         const response = await fetch(apiUrl,{
