@@ -3,10 +3,15 @@ export default function getRelevantMatchday(matchesByMatchday) {
     
     const matchdays = Object.keys(matchesByMatchday)
         .map(Number)
+        .filter(day => Number.isFinite(day))
         .sort((a, b) => a - b);
     
+    if(matchdays.length === 0) return null;
+
     for(const day of matchdays){
         const matches = matchesByMatchday[day];
+
+        if(!Array.isArray(matches)) continue;
 
         if(matches.some(
             m => 
@@ -20,11 +25,14 @@ export default function getRelevantMatchday(matchesByMatchday) {
 
     for(const day of matchdays){
         const matches = matchesByMatchday[day];
+
+        if(!Array.isArray(matches)) continue;
+
         if(matches.some(m => m.status === "SCHEDULED")){
             return day;
         }
     }
 
-    return null;
+    return matchdays[0];
     
 }

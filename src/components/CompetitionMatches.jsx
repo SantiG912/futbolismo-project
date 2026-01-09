@@ -16,7 +16,9 @@ export default function CompetitionMatches({ competitionId }) {
   const matches = matchData?.matches ?? [];
 
   const matchesByMatchday = React.useMemo(() => {
-    return matches.reduce((acc, match) => {
+    return matches
+    .filter(match => Number.isInteger(match.matchday))
+    .reduce((acc, match) => {
       const matchday = match.matchday;
       if (!acc[matchday]) acc[matchday] = [];
       acc[matchday].push(match);
@@ -25,9 +27,9 @@ export default function CompetitionMatches({ competitionId }) {
   }, [matches]);
 
   const currentMatchday = React.useMemo(() => {
-    if (matches.length === 0) return null;
+    if(Object.keys(matchesByMatchday).length === 0) return null;
     return getRelevantMatchday(matchesByMatchday);
-  }, [matchesByMatchday, matches]);
+  }, [matchesByMatchday]);
 
   useEffect(() => {
     if(currentMatchday && !selectedMatchday){
@@ -40,7 +42,7 @@ export default function CompetitionMatches({ competitionId }) {
   if(!matchData)return <p>No hay respuesta del servidor</p>;
   if(matches.length === 0)return <p>No hay partidos disponibles</p>;
   if(!currentMatchday)return <p>No hay jornadas disponibles</p>;
-
+  if(Object.keys(matchesByMatchday).length === 0) return <p>No hay jornadas disponibles</p>;
   return (
     <section className="matches-container">
       <h3>Partidos</h3>
